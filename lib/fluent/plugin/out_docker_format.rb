@@ -14,7 +14,7 @@ module Fluent
 
     def emit(tag, es, chain)
       es.each do |time,record|
-        Engine.emit(@tag, time, format_record(tag, record))
+        Engine.emit(interpolate_tag(tag), time, format_record(tag, record))
       end
 
       chain.next
@@ -28,12 +28,20 @@ module Fluent
       str.gsub(/\$\{tag_parts\[(\d+)\]\}/) { |m| tag_parts[$1.to_i] }
     end
 
+    def interpolate_tag(tag)
+      id = interpolate(tag, @container_id)
+      name = get_name(id)
+      name = name[1..-1] if name
+
+      @tag.gsub(/\$\{name\}/, name || id)
+    end
+
     def get_name_from_cfg(id)
       begin
         docker_cfg = JSON.parse(File.read("#{@docker_containers_path}/#{id}/config.json"))
         container_name = docker_cfg['Name']
       rescue
-        container_name = "<unknown>"
+        container_name = nil
       end
       container_name
     end
@@ -46,7 +54,7 @@ module Fluent
     def format_record(tag, record)
       id = interpolate(tag, @container_id)
       record['container_id'] = id
-      record['container_name'] = get_name(id)
+      record['container_name'] = get_name(id) || "<unknown>"
       record
     end
   end

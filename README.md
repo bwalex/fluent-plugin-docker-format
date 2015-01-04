@@ -48,7 +48,7 @@ A full example:
 <match docker.var.lib.docker.containers.*.*.log>
   type docker_format
   container_id ${tag_parts[5]}
-  tag docker.all
+  tag docker.${name}
 </match>
 ```
 
