@@ -3,7 +3,7 @@ lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 Gem::Specification.new do |spec|
-  spec.name          = "fluent-plugin-docker-format-plntr"
+  spec.name          = "fluent-plugin-docker-format"
   spec.version       = File.read("VERSION").strip
   spec.authors       = ["Alex Hornung"]
   spec.email         = ["alex@alexhornung.com"]
@@ -20,6 +20,4 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency "bundler", "~> 1.3"
   spec.add_development_dependency "rake", "~> 10.4.2"
-
-#    spec.add_dependency "fluentd", "~> 0.10.17"
 end
