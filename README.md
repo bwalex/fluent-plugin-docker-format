@@ -62,7 +62,7 @@ The output record will have the following additional fields:
 
 <match docker.var.lib.docker.containers.*.*.log>
   type docker_format
-  container_id ${tag_parts[5]}
+  container_id ${tag_parts[-2]}
   tag docker.${name}.${id}.${stream}
 </match>
 ```

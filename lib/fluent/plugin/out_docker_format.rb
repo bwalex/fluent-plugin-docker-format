@@ -51,10 +51,10 @@ module Fluent
     end
 
     def format_record(tag, record)
-      id = interpolate(tag, @container_id)
-      record['full_id'] = id
-      record['id'] = id[0..12]
-      record['name'] = get_name(id) || "<unknown>"
+      full_id = interpolate(tag, @container_id)
+      record['full_id'] = full_id
+      record['id'] = full_id[0..12]
+      record['name'] = get_name(full_id) || "<unknown>"
       record
     end
   end
