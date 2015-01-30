@@ -29,19 +29,6 @@ Or install it yourself as:
 </match>
 ```
 
-The `docker_containers_path` is optional and defaults to `/var/lib/docker/containers`.
-
-The `container_id` parameter can either be a string with the id, or use the special interpolated substitution `${tag_parts[<some number>]}`. The tag parts are the dot-separated parts of the incoming tag, so that in the above example they would match the first star.
-
-The `tag` parameter either be:
- - a string with the id
- - use the special interpolated substitution `${tag_parts[<some number>]}`.
-   The tag parts are the dot-separated parts of the incoming tag,
-   so that in the above example they would match the first star.
- - use the special interpolated substitution `${<field>}`,
-   where `field` is the field of the record,
-   including the new fields: `name`, `full_id` and `id` (see below).
-
 The output record will have the following additional fields:
   - `name`: container name, e.g. `saint_stallman`
   - `full_id`: full id of the container,
@@ -62,7 +49,7 @@ The output record will have the following additional fields:
 
 <match docker.var.lib.docker.containers.*.*.log>
   type docker_format
-  container_id ${tag_parts[-2]}
+  container_id ${tag_parts[-3]}
   tag docker.${name}.${id}.${stream}
 </match>
 ```
@@ -70,9 +57,9 @@ The output record will have the following additional fields:
 So if an input event was
 
 ```json
-{
-  "tag": "docker.var.lib.docker.containersffb4d30ab540b43e040a4cebbf968137cb0f17e21e61e90547113dfb83e3df79.ffb4d30ab540b43e040a4cebbf968137cb0f17e21e61e90547113dfb83e3df79-json.log",
-  "time":"2015-01-29T22:01:28.583281971Z",
+tag = docker.var.lib.docker.containers.ffb4d30ab540b43e040a4cebbf968137cb0f17e21e61e90547113dfb83e3df79.ffb4d30ab540b43e040a4cebbf968137cb0f17e21e61e90547113dfb83e3df79-json.log
+time = 2015-01-29T22:01:28.583281971Z
+record = {
   "stream":"stdout",
   "log": "actual log line",
 }
@@ -81,9 +68,9 @@ So if an input event was
 it will become:
 
 ```json
-{
-  "tag": "docker.saint_stallman.ffb4d30ab540.stdout",
-  "time":"2015-01-29T22:01:28.583281971Z",
+tag = docker.saint_stallman.ffb4d30ab540.stdout
+time = 2015-01-29T22:01:28.583281971Z
+record = {
   "name": "saint_stallman",
   "id": "ffb4d30ab540",
   "full_id": "ffb4d30ab540b43e040a4cebbf968137cb0f17e21e61e90547113dfb83e3df79",
@@ -92,6 +79,32 @@ it will become:
 }
 ```
 
+## Option Parameters
+
+- container_id
+
+    The container id.
+
+    The parameter value is interpolated with the following placeholders:
+      - `${tag}`: the input tag
+      - `${tag\_parts[N]}`: input tag splitted by '.' indexed with `N` such as
+        `${tag_parts[0]}`, `${tag_parts[-1]}`. 
+
+- tag
+
+    The output tag.
+
+    Tag parameter value is interpolated with the following placeholders:
+      - `${tag}`: input tag
+      - `${tag\_parts[N]}`: input tag splitted by '.' indexed with `N` such as
+        `${tag_parts[0]}`, `${tag_parts[-1]}`. 
+      - `${<field>}`: any record field including the newly added fields
+	(`id`, `full_id` and `name`)
+
+- docker_containers_path (optional)
+
+    The path to docker containers directory;
+    defaults to `/var/lib/docker/containers`.
 
 ## Contributing
 
