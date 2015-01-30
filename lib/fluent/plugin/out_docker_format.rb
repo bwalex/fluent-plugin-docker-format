@@ -14,7 +14,8 @@ module Fluent
 
     def emit(tag, es, chain)
       es.each do |time,record|
-        Engine.emit(interpolate_tag(tag), time, format_record(tag, record))
+	record = format_record(tag, record)
+        Engine.emit(interpolate_tag(tag, record), time, record)
       end
 
       chain.next
@@ -28,12 +29,10 @@ module Fluent
       str.gsub(/\$\{tag_parts\[(\d+)\]\}/) { |m| tag_parts[$1.to_i] }
     end
 
-    def interpolate_tag(tag)
-      id = interpolate(tag, @container_id)
-      name = get_name(id)
-      name = name[1..-1] if name
-
-      @tag.gsub(/\$\{name\}/, name || id)
+    def interpolate_tag(tag, record)
+      record.reduce(interpolate(tag, @tag)) do |t, (key, value)|
+        t.gsub(/\$\{#{key}\}/, value)
+      end
     end
 
     def get_name_from_cfg(id)
@@ -53,8 +52,9 @@ module Fluent
 
     def format_record(tag, record)
       id = interpolate(tag, @container_id)
-      record['container_id'] = id
-      record['container_name'] = get_name(id) || "<unknown>"
+      record['full_id'] = id
+      record['id'] = id[0..12]
+      record['name'] = get_name(id) || "<unknown>"
       record
     end
   end
