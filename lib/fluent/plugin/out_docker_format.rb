@@ -26,7 +26,8 @@ module Fluent
     def interpolate(tag, str)
       tag_parts = tag.split('.')
 
-      str.gsub(/\$\{tag_parts\[(-?\d+)\]\}/) { |m| tag_parts[$1.to_i] }
+      str.gsub(/\$\{tag\}/, tag)
+         .gsub(/\$\{tag_parts\[(-?\d+)\]\}/) { |m| tag_parts[$1.to_i] }
     end
 
     def interpolate_tag(tag, record)
