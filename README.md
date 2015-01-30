@@ -35,7 +35,9 @@ The output record will have the following additional fields:
     e.g. `ffb4d30ab540b43e040a4cebbf968137cb0f17e21e61e90547113dfb83e3df79`
   - `id`: abbreviated id of the container, e.g. `ffb4d30ab540`
 
-### A full example:
+#### A full example
+
+Consider following config:
 
 ```
 <source>
@@ -54,7 +56,7 @@ The output record will have the following additional fields:
 </match>
 ```
 
-So if an input event was
+Then an input event
 
 ```json
 tag = docker.var.lib.docker.containers.ffb4d30ab540b43e040a4cebbf968137cb0f17e21e61e90547113dfb83e3df79.ffb4d30ab540b43e040a4cebbf968137cb0f17e21e61e90547113dfb83e3df79-json.log
@@ -65,7 +67,7 @@ record = {
 }
 ```
 
-it will become:
+will become:
 
 ```json
 tag = docker.saint_stallman.ffb4d30ab540.stdout
@@ -87,7 +89,7 @@ record = {
 
     The parameter value is interpolated with the following placeholders:
       - `${tag}`: the input tag
-      - `${tag\_parts[N]}`: input tag splitted by '.' indexed with `N` such as
+      - `${tag_parts[N]}`: input tag splitted by '.' indexed with `N` such as
         `${tag_parts[0]}`, `${tag_parts[-1]}`. 
 
 - tag
@@ -96,9 +98,9 @@ record = {
 
     Tag parameter value is interpolated with the following placeholders:
       - `${tag}`: input tag
-      - `${tag\_parts[N]}`: input tag splitted by '.' indexed with `N` such as
+      - `${tag_parts[N]}`: input tag splitted by '.' indexed with `N` such as
         `${tag_parts[0]}`, `${tag_parts[-1]}`. 
-      - `${<field>}`: any record field including the newly added fields
+      - `${<field>}`: any record field including the new fields
 	(`id`, `full_id` and `name`)
 
 - docker_containers_path (optional)
