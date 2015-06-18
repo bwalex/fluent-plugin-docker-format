@@ -31,7 +31,6 @@ module Fluent
     def interpolate_tag(tag)
       id = interpolate(tag, @container_id)
       name = get_name(id)
-      name = name[1..-1] if name
 
       @tag.gsub(/\$\{name\}/, name || id)
     end
@@ -39,7 +38,7 @@ module Fluent
     def get_name_from_cfg(id)
       begin
         docker_cfg = JSON.parse(File.read("#{@docker_containers_path}/#{id}/config.json"))
-        container_name = docker_cfg['Name']
+        container_name = docker_cfg['Name'][1..-1]
       rescue
         container_name = nil
       end
