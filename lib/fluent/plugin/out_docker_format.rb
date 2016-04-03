@@ -38,7 +38,11 @@ module Fluent
 
     def get_name_from_cfg(id)
       begin
-        docker_cfg = JSON.parse(File.read("#{@docker_containers_path}/#{id}/config.json"))
+        config_path = "#{@docker_containers_path}/#{id}/config.json"
+        if not File.exists?(config_path)
+          config_path = "#{@docker_containers_path}/#{id}/config.v2.json"
+        end
+        docker_cfg = JSON.parse(File.read(config_path))
         container_name = docker_cfg['Name']
       rescue
         container_name = nil
