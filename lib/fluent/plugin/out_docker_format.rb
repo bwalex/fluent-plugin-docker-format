@@ -9,7 +9,7 @@ module Fluent
 
     def configure(conf)
       super
-      @id_to_name = {}
+      @id_to_docker_cfg = {}
     end
 
     def emit(tag, es, chain)
@@ -30,13 +30,17 @@ module Fluent
 
     def interpolate_tag(tag)
       id = interpolate(tag, @container_id)
-      name = get_name(id)
-      name = name[1..-1] if name
 
-      @tag.gsub(/\$\{name\}/, name || id)
+      container_name = get_container_name(id)
+      @tag.gsub(/\$\{name\}/, container_name || id)
+      @tag.gsub(/\$\{container_name\}/, container_name || id)
+
+      image_name = get_image_name(id)
+      image_name.gsub!(/\:.*$/,'') if image_name  # strip the docker tag
+      @tag.gsub(/\$\{image_name\}/, image_name || id)
     end
 
-    def get_name_from_cfg(id)
+    def get_docker_cfg_from_id(id)
       begin
         config_path = "#{@docker_containers_path}/#{id}/config.json"
         if not File.exists?(config_path)
@@ -45,21 +49,39 @@ module Fluent
         docker_cfg = JSON.parse(File.read(config_path))
         container_name = docker_cfg['Name']
       rescue
+        docker_cfg = nil
+      end
+      docker_cfg
+    end 
+
+    def get_container_name(id)
+      @id_to_docker_cfg[id] = get_docker_cfg_from_id(id) unless @id_to_docker_cfg.has_key? id
+      if @id_to_docker_cfg[id] == nil 
         container_name = nil
+      else 
+        container_name = @id_to_docker_cfg[id]['Name'][1..-1]
       end
       container_name
     end
+    alias_method :get_name, :get_container_name
 
-    def get_name(id)
-      @id_to_name[id] = get_name_from_cfg(id) unless @id_to_name.has_key? id
-      @id_to_name[id]
+    def get_image_name(id)
+      @id_to_docker_cfg[id] = get_docker_cfg_from_id(id) unless @id_to_docker_cfg.has_key? id
+      if @id_to_docker_cfg[id] == nil 
+        image_name = nil
+      else 
+        image_name = @id_to_docker_cfg[id]['Config']['Image'].dup
+      end
+      image_name
     end
 
     def format_record(tag, record)
       id = interpolate(tag, @container_id)
       record['container_id'] = id
-      record['container_name'] = get_name(id) || "<unknown>"
+      record['container_name'] = get_container_name(id) || "<unknown>"
+      record['image_name'] = get_image_name(id) || "<unknown>"
       record
     end
+
   end
 end
