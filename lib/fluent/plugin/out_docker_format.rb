@@ -42,7 +42,12 @@ module Fluent
 
     def get_docker_cfg_from_id(id)
       begin
-        docker_cfg = JSON.parse(File.read("#{@docker_containers_path}/#{id}/config.json"))
+        config_path = "#{@docker_containers_path}/#{id}/config.json"
+        if not File.exists?(config_path)
+          config_path = "#{@docker_containers_path}/#{id}/config.v2.json"
+        end
+        docker_cfg = JSON.parse(File.read(config_path))
+        container_name = docker_cfg['Name']
       rescue
         docker_cfg = nil
       end
@@ -58,6 +63,7 @@ module Fluent
       end
       container_name
     end
+    alias_method :get_name, :get_container_name
 
     def get_image_name(id)
       @id_to_docker_cfg[id] = get_docker_cfg_from_id(id) unless @id_to_docker_cfg.has_key? id
@@ -76,5 +82,6 @@ module Fluent
       record['image_name'] = get_image_name(id) || "<unknown>"
       record
     end
+
   end
 end
