@@ -33,15 +33,14 @@ module Fluent
 
       container_name = get_container_name(id)
       $log.info "Container Name Interp: #{container_name} to sub into : #{@tag}"
-      @tag.gsub(/\$\{name\}/, container_name || id)
+      @tag = @tag.gsub(/\$\{name\}/, container_name || id)
       $log.info "Tag1 : #{@tag}"
-      @tag.gsub(/\$\{container_name\}/, container_name || id)
+      @tag = @tag.gsub(/\$\{container_name\}/, container_name || id)
       $log.info "Tag2 : #{@tag}"
 
       image_name = get_image_name(id)
       image_name.gsub!(/\:.*$/,'') if image_name  # strip the docker tag
       @tag.gsub(/\$\{image_name\}/, image_name || id)
-      $log.info "TagF : #{@tag}"
     end
 
     def get_docker_cfg_from_id(id)
