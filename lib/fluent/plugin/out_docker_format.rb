@@ -59,7 +59,7 @@ module Fluent
       if @id_to_docker_cfg[id] == nil 
         container_name = nil
       else 
-        container_name = @id_to_docker_cfg[id]['Name'][1..-1]
+        container_name = @id_to_docker_cfg[id]['Name'][1..-1].dup
       end
       container_name
     end
