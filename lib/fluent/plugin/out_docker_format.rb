@@ -32,6 +32,7 @@ module Fluent
       id = interpolate(tag, @container_id)
 
       container_name = get_container_name(id)
+      $log.info "Container Name Interp: #{container_name}"
       @tag.gsub(/\$\{name\}/, container_name || id)
       @tag.gsub(/\$\{container_name\}/, container_name || id)
 
