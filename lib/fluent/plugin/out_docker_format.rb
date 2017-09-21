@@ -32,12 +32,12 @@ module Fluent
       id = interpolate(tag, @container_id)
 
       container_name = get_container_name(id)
-      @tag.gsub(/\$\{name\}/, container_name || id)
-      @tag.gsub(/\$\{container_name\}/, container_name || id)
+      newTag = @tag.gsub(/\$\{name\}/, container_name || id)
+      newTag = newTag.gsub(/\$\{container_name\}/, container_name || id)
 
       image_name = get_image_name(id)
       image_name.gsub!(/\:.*$/,'') if image_name  # strip the docker tag
-      @tag.gsub(/\$\{image_name\}/, image_name || id)
+      newTag.gsub(/\$\{image_name\}/, image_name || id)
     end
 
     def get_docker_cfg_from_id(id)
@@ -59,7 +59,7 @@ module Fluent
       if @id_to_docker_cfg[id] == nil 
         container_name = nil
       else 
-        container_name = @id_to_docker_cfg[id]['Name'][1..-1]
+        container_name = @id_to_docker_cfg[id]['Name'][1..-1].dup
       end
       container_name
     end
